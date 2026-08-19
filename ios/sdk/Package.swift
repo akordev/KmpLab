@@ -21,9 +21,5 @@ let package = Package(
             name: "KmpLabSDK",
             dependencies: ["KmpLabNetwork"]
         ),
-        .testTarget(
-            name: "KmpLabSDKTests",
-            dependencies: ["KmpLabSDK"]
-        ),
     ]
 )

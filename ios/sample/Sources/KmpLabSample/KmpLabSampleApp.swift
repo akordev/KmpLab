@@ -4,7 +4,7 @@ import SwiftUI
 struct KmpLabSampleApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            EmptyView()
         }
     }
 }
