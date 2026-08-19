@@ -1,0 +1,6 @@
+# Toolchain pins for KmpLab.
+# JDK 21 rather than the machine default (26): AGP 9.3 and Kotlin 2.4 are not
+# validated against 26, and the Android toolchain rejects it outright.
+[tools]
+java = "temurin-21"
+gradle = "9.7.0"
