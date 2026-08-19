@@ -2,6 +2,7 @@
 kotlin = "2.4.10"
 agp = "9.3.1"
 ktor = "3.5.2"
+skie = "0.10.14"
 coroutines = "1.11.0"
 serialization = "1.11.0"
 
@@ -52,3 +53,4 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 android-library = { id = "com.android.library", version.ref = "agp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+skie = { id = "co.touchlab.skie", version.ref = "skie" }

@@ -22,7 +22,8 @@ android/sdk/        Android library. The public Kotlin SDK surface.
 android/sample/     Compose app that integrates android/sdk as a third party would.
 
 ios/sdk/            Swift package. The public Swift SDK surface, wrapping the
-                    XCFramework that shared/network produces.
+                    XCFramework that shared/network produces (built with SKIE,
+                    so the Kotlin sealed types arrive as real Swift enums).
 ios/sample/         SwiftUI app that integrates ios/sdk.
 ```
 
@@ -93,5 +94,7 @@ Linux rather than failing:
   (`linkDebugFrameworkIos*`, `assembleKmpLabNetwork*XCFramework`).
 - Running the iOS unit tests.
 - Every line of Swift under `ios/`. It has never been through a compiler.
+- SKIE itself. It is a linker plugin, so it never ran here — only that it applies
+  cleanly and supports Kotlin 2.4.10 has been confirmed.
 
 The obvious next step is a `macos-latest` GitHub Actions job to close that gap.

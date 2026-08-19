@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.android.kotlin.multiplatform.library)
+    alias(libs.plugins.skie)
 }
 
 // One XCFramework bundling every iOS slice. This is what ios/sdk consumes as a
@@ -24,7 +25,6 @@ kotlin {
     listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach { target ->
         target.binaries.framework {
             baseName = "KmpLabNetwork"
-            isStatic = true
             xcframework.add(this)
         }
     }
@@ -49,5 +49,20 @@ kotlin {
             implementation(libs.ktor.client.mock)
             implementation(libs.kotlinx.coroutines.test)
         }
+    }
+}
+
+// SKIE rewrites the generated Swift API: sealed classes become exhaustive Swift
+// enums with their generic type argument intact, Kotlin default arguments become
+// Swift overloads, and Flows become AsyncSequences. Without it the Swift side has
+// to cast its way through Objective-C, which erases all of that.
+//
+// SKIE is a *linker* plugin: it only runs when a framework is actually linked,
+// which cannot happen on Linux. See ios/README.md.
+skie {
+    build {
+        // The XCFramework is consumed by SwiftPM, potentially from a different
+        // Xcode version than the one that built it.
+        produceDistributableFramework()
     }
 }
