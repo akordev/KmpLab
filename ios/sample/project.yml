@@ -1,0 +1,38 @@
+# The Xcode project is generated rather than committed: a .pbxproj is a merge
+# hazard and impossible to review. Regenerate with `xcodegen generate` from this
+# directory (brew install xcodegen).
+name: KmpLabSample
+
+options:
+  bundleIdPrefix: dev.akordev.kmplab
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+
+packages:
+  KmpLabSDK:
+    path: ../sdk
+
+targets:
+  KmpLabSample:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources/KmpLabSample
+    dependencies:
+      - package: KmpLabSDK
+        product: KmpLabSDK
+    info:
+      path: Generated/Info.plist
+      properties:
+        CFBundleDisplayName: KmpLab Sample
+        UILaunchScreen: {}
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.akordev.kmplab.sample
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1,2"

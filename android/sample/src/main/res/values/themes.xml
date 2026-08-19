@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Framework theme on purpose: Compose supplies the real styling, so the
+         sample needs no AppCompat or Material Components dependency. -->
+    <style name="Theme.KmpLabSample" parent="android:Theme.Material.Light.NoActionBar" />
+</resources>
