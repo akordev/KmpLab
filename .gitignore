@@ -25,13 +25,14 @@ captures/
 *.iws
 .fleet/
 
-# --- Xcode / SwiftPM ------------------------------------------------------
-.build/
-.swiftpm/
+# --- Xcode / Tuist --------------------------------------------------------
 DerivedData/
 *.xcodeproj/
 *.xcworkspace/
-ios/sample/Generated/
+
+# Tuist generates the projects; only the manifests are committed.
+Derived/
+.tuist/
 
 # The XCFramework is a build output produced by ios/build-xcframework.sh.
 ios/sdk/Artifacts/*.xcframework/

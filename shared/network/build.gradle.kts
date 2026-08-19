@@ -25,6 +25,7 @@ kotlin {
     listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach { target ->
         target.binaries.framework {
             baseName = "KmpLabNetwork"
+            isStatic = true
             xcframework.add(this)
         }
     }
@@ -61,8 +62,11 @@ kotlin {
 // which cannot happen on Linux. See ios/README.md.
 skie {
     build {
-        // The XCFramework is consumed by SwiftPM, potentially from a different
-        // Xcode version than the one that built it.
+        // The XCFramework is handed to consumers as a binary, so it may be linked
+        // by a different Xcode than built it. This turns on Swift library
+        // evolution — which XCFrameworks require — along with
+        // noClangModuleBreadcrumbsInStaticFrameworks, which exists for exactly
+        // the static framework this produces.
         produceDistributableFramework()
     }
 }
