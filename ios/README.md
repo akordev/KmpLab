@@ -17,18 +17,30 @@ tuist generate      # Workspace.swift + Project.swift -> KmpLab.xcworkspace
 ```
 
 That opens the workspace. Building the sample runs a pre-action that calls
-`build-xcframework.sh debug`, so ⌘R always builds current Kotlin and the app can
-never run against a stale framework.
 
-For a framework to hand to consumers, run it directly:
-
-```bash
-./ios/build-xcframework.sh release
+```
+./gradlew :shared:network:assembleKmpLabNetworkDebugXCFramework
 ```
 
-Either way the XCFramework lands in `sdk/Artifacts/`, which is not checked in —
-it is a binary build output, and `sdk/Project.swift` links it with
-`.xcframework(path:)`. Nothing will build until it exists.
+so ⌘R always builds current Kotlin and the app can never run against a stale
+framework. The target sets `ENABLE_USER_SCRIPT_SANDBOXING = NO`, because Gradle
+writes outside the build directory and Xcode's script sandbox forbids that.
+
+For a framework to hand to consumers, swap the configuration:
+
+```bash
+./gradlew :shared:network:assembleKmpLabNetworkReleaseXCFramework
+```
+
+Gradle writes the XCFramework directly into `sdk/Artifacts/<config>/` — the task's
+`outputDir` is pointed there from `shared/network/build.gradle.kts`, so there is
+no copy step and no wrapper script. `sdk/Project.swift` links
+`Artifacts/debug/KmpLabNetwork.xcframework`; nothing will build until that exists.
+The directory is not checked in.
+
+One gotcha: Xcode's Run Script environment is not your shell, so `gradlew` may not
+find a JDK. If the pre-action fails with a Java error, set `JAVA_HOME` explicitly
+in the script.
 
 Xcode projects are generated rather than committed: a `.pbxproj` is
 machine-written, merge-hostile and not reviewable.

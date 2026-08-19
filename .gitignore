@@ -35,7 +35,7 @@ Derived/
 .tuist/
 
 # The XCFramework is a build output produced by ios/build-xcframework.sh.
-ios/sdk/Artifacts/*.xcframework/
+ios/sdk/Artifacts/*/
 
 # --- OS -------------------------------------------------------------------
 .DS_Store

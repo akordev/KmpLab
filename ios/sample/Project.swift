@@ -22,7 +22,8 @@ let project = Project(
                 .pre(
                     script: #"""
                     set -euo pipefail
-                    "$SRCROOT/../build-xcframework.sh" debug
+                    ROOT="$SRCROOT/../.."
+                    "$ROOT/gradlew" -p "$ROOT"                         :shared:network:assembleKmpLabNetworkDebugXCFramework
                     """#,
                     name: "Rebuild KmpLabNetwork.xcframework",
                     basedOnDependencyAnalysis: false
@@ -30,7 +31,14 @@ let project = Project(
             ],
             dependencies: [
                 .project(target: "KmpLabSDK", path: "../sdk"),
-            ]
+            ],
+            settings: .settings(
+                base: [
+                    // Gradle writes outside the build directory, which Xcode's
+                    // script sandbox forbids.
+                    "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
+                ]
+            )
         ),
     ]
 )

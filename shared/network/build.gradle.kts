@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -12,7 +13,7 @@ plugins {
 val xcframework = XCFramework("KmpLabNetwork")
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "dev.akordev.kmplab.network"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
@@ -69,4 +70,14 @@ skie {
         // the static framework this produces.
         produceDistributableFramework()
     }
+}
+
+// Write the XCFramework straight into the iOS tree instead of build/, so
+// ios/sdk/Project.swift can reference it by a fixed relative path. The task
+// appends the build type, giving Artifacts/debug and Artifacts/release.
+//
+// Relative to this project rather than rootProject.layout, which the
+// configuration cache does not allow a subproject to reach for.
+tasks.withType<XCFrameworkTask>().configureEach {
+    outputDir = layout.projectDirectory.dir("../../ios/sdk/Artifacts").asFile
 }
