@@ -25,7 +25,8 @@ public enum KmpLab {
         "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "x86_64",
     ]
 
-    // Deliberately not here: SWIFT_TREAT_WARNINGS_AS_ERRORS. SKIE emits a
-    // swift-module-cache warning for static XCFrameworks that would fail every
-    // build. Revisit once that is gone.
+    // Not here: SWIFT_TREAT_WARNINGS_AS_ERRORS. It was left off for a SKIE
+    // swift-module-cache warning on static XCFrameworks, but a clean build of
+    // either scheme currently produces no warnings, so nothing is known to block
+    // turning it on.
 }
