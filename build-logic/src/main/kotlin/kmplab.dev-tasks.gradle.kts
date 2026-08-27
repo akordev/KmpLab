@@ -30,6 +30,7 @@ val tuistGenerate = tasks.register<TuistGenerateTask>("generateXcodeWorkspace") 
     // folders, so adding a file needs no regeneration.
     manifests.from(
         iosDir.file("Tuist.swift"),
+        iosDir.file("Workspace.swift"),
         iosDir.dir("Tuist"),
         iosDir.file("sdk/Project.swift"),
         iosDir.file("sample/Project.swift"),
