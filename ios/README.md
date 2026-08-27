@@ -26,17 +26,19 @@ so ⌘R always builds current Kotlin and the app can never run against a stale
 framework. The target sets `ENABLE_USER_SCRIPT_SANDBOXING = NO`, because Gradle
 writes outside the build directory and Xcode's script sandbox forbids that.
 
-For a framework to hand to consumers, swap the configuration:
+You rarely need to run this by hand: the `KmpLabNetwork` foreign build target
+invokes it, picking Debug or Release to match Xcode's configuration.
 
-```bash
-./gradlew :shared:network:assembleKmpLabNetworkReleaseXCFramework
-```
+The XCFramework is an intermediate, not a deliverable — `KmpLabSDK` is the only
+thing consumers ever integrate, and it absorbs the Kotlin framework. So it stays
+in Gradle's build directory, at
+`shared/network/build/XCFrameworks/<config>/KmpLabNetwork.xcframework`.
 
-Gradle writes the XCFramework directly into `sdk/Artifacts/<config>/` — the task's
-`outputDir` is pointed there from `shared/network/build.gradle.kts`, so there is
-no copy step and no wrapper script. `sdk/Project.swift` links
-`Artifacts/debug/KmpLabNetwork.xcframework`; nothing will build until that exists.
-The directory is not checked in.
+A pbxproj cannot vary an xcframework reference by configuration, so
+`sdk/Project.swift` instead links a fixed sibling path,
+`shared/network/build/XCFrameworks/KmpLabNetwork.xcframework`, which is a symlink
+each assemble task repoints at the build type it just produced. Nothing will
+build until that symlink exists — run `mise run setup` on a fresh clone.
 
 One gotcha: Xcode's Run Script environment is not your shell, so `gradlew` may not
 find a JDK. If the pre-action fails with a Java error, set `JAVA_HOME` explicitly
