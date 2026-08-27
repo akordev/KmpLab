@@ -1,4 +1,8 @@
 pluginManagement {
+    // Developer-facing tasks (build the app or the SDK, either platform, either
+    // configuration) live here as a precompiled script plugin.
+    includeBuild("build-logic")
+
     repositories {
         google()
         mavenCentral()

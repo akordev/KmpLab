@@ -26,6 +26,14 @@ let project = Project(
             script: #"""
             set -euo pipefail
             ROOT="${SRCROOT:-$PWD}/../.."
+            # Set by the Gradle buildIos* tasks, which have already built the
+            # framework as a dependency. Without this the phase would start a
+            # second Gradle from inside the first, and the two would contend for
+            # the same project lock.
+            if [ "${KMPLAB_XCFRAMEWORK_READY:-0}" = "1" ]; then
+                echo "note: XCFramework built by the invoking Gradle build"
+                exit 0
+            fi
             # Kotlin/Native release is a full LLVM optimization pass — minutes,
             # not seconds — so the build type has to follow Xcode's, not be
             # pinned. This is the only place that choice is made.
