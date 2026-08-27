@@ -58,7 +58,13 @@ let project = Project(
         .target(
             name: "KmpLabSDK",
             destinations: .iOS,
-            product: .staticFramework,
+            // Dynamic, not static, and that is a distribution decision rather than
+            // a linking preference. A static framework does not link its own
+            // dependencies: consumers would have to add KmpLabNetwork.xcframework
+            // themselves and would see every Kotlin type. Dynamic absorbs the
+            // static Kotlin framework, so what ships is one file that reveals
+            // nothing.
+            product: .framework,
             bundleId: "dev.akordev.kmplab.sdk",
             deploymentTargets: KmpLab.deploymentTargets,
             // A buildable folder, not a glob: Xcode tracks the directory itself,
@@ -72,7 +78,18 @@ let project = Project(
                 .xcframework(
                     path: "../../shared/network/build/XCFrameworks/KmpLabNetwork.xcframework"
                 ),
-            ]
+            ],
+            settings: .settings(base: [
+                // Emit a .swiftinterface rather than a compiler-locked
+                // .swiftmodule. Consumers build with a different Xcode than this,
+                // and module stability is the whole reason that works.
+                "BUILD_LIBRARY_FOR_DISTRIBUTION": "YES",
+
+                // Kotlin/Native's Objective-C classes and categories come from a
+                // static archive, and the linker drops anything no Swift symbol
+                // references. -ObjC keeps them.
+                "OTHER_LDFLAGS": "-ObjC",
+            ])
         ),
     ]
 )

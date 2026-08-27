@@ -4,7 +4,7 @@
 // the Kotlin-to-Swift shape stays visible. Everything it touches is a Kotlin
 // type, which the real surface is supposed to hide.
 import Foundation
-import KmpLabNetwork
+internal import KmpLabNetwork
 
 enum ApiResultShowcase {
 

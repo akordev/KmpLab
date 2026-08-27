@@ -2,6 +2,6 @@
 //
 // It wraps the KmpLabNetwork XCFramework produced by :shared:network, so that
 // consumers never see a Kotlin type. See ../../README.md.
-import KmpLabNetwork
+internal import KmpLabNetwork
 
 
