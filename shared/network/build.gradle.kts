@@ -1,3 +1,5 @@
+import java.nio.file.Files
+import java.nio.file.Paths
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFrameworkTask
 
@@ -72,12 +74,35 @@ skie {
     }
 }
 
-// Write the XCFramework straight into the iOS tree instead of build/, so
-// ios/sdk/Project.swift can reference it by a fixed relative path. The task
-// appends the build type, giving Artifacts/debug and Artifacts/release.
+// The XCFramework is an intermediate, not a deliverable: ios/sdk is its only
+// consumer and KmpLabSDK absorbs it. So it stays under build/, where `gradlew
+// clean` reaches it and .gitignore already covers it.
 //
-// Relative to this project rather than rootProject.layout, which the
-// configuration cache does not allow a subproject to reach for.
-tasks.withType<XCFrameworkTask>().configureEach {
-    outputDir = layout.projectDirectory.dir("../../ios/sdk/Artifacts").asFile
+// A pbxproj cannot vary an xcframework reference by configuration, so Xcode needs
+// one fixed path. These tasks maintain it as a symlink pointing at whichever
+// build type was asked for.
+//
+// The symlink has to follow the *request*, not the build: assembling is often
+// UP-TO-DATE, and a doLast on the assemble task would then be skipped, leaving
+// Debug builds silently linking the release framework. Hence a separate task
+// that never reports itself up to date.
+val xcframeworksDir = layout.buildDirectory.dir("XCFrameworks").get().asFile
+
+listOf("Debug", "Release").forEach { buildType ->
+    tasks.register("linkKmpLabNetwork${buildType}XCFramework") {
+        description = "Assemble the $buildType XCFramework and point KmpLabNetwork.xcframework at it"
+        dependsOn("assembleKmpLabNetwork${buildType}XCFramework")
+        outputs.upToDateWhen { false }
+
+        val target = Paths.get(buildType.lowercase(), "KmpLabNetwork.xcframework")
+        val dir = xcframeworksDir
+        doLast {
+            val link = dir.resolve("KmpLabNetwork.xcframework")
+            when {
+                Files.isSymbolicLink(link.toPath()) -> Files.delete(link.toPath())
+                link.exists() -> link.deleteRecursively()
+            }
+            Files.createSymbolicLink(link.toPath(), target)
+        }
+    }
 }

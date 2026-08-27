@@ -7,3 +7,13 @@ gradle = "9.7.0"
 # Tuist's manifest API moves between versions, so generation must not depend on
 # whatever brew last installed.
 tuist = "4.205.0"
+
+# One command on a fresh clone. Gradle has to run first: ios/sdk/Project.swift
+# names the XCFramework as a dependency, and `tuist generate` refuses to build a
+# graph whose xcframework is missing.
+[tasks.setup]
+description = "Build the Kotlin XCFramework and generate the Xcode workspace"
+run = [
+    "./gradlew :shared:network:linkKmpLabNetworkDebugXCFramework",
+    "tuist generate --path ios --no-open",
+]
