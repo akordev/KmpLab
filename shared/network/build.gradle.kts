@@ -75,6 +75,17 @@ skie {
         // the static framework this produces.
         produceDistributableFramework()
     }
+
+    // SKIE captures build analytics and uploads them to Touchlab on every
+    // framework link — the skieUploadAnalytics* tasks in the build log. Nothing
+    // in the build should need the network to succeed, so both halves are off.
+    //
+    // If you ever want to see what it would have sent, swap this for
+    // disableUpload.set(true): capture still happens, and the JSON lands in
+    // build/skie/<framework>/<arch>/analytics.
+    analytics {
+        enabled.set(false)
+    }
 }
 
 // The XCFramework is an intermediate, not a deliverable: ios/sdk is its only
