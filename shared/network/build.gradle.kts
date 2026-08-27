@@ -25,7 +25,10 @@ kotlin {
         withHostTestBuilder {}
     }
 
-    listOf(iosArm64(), iosSimulatorArm64(), iosX64()).forEach { target ->
+    // No iosX64: that slice exists only for the simulator on an Intel Mac, and
+    // it costs a third of every Kotlin rebuild in the local dev loop. Add it back
+    // here if someone needs to develop on Intel hardware.
+    listOf(iosArm64(), iosSimulatorArm64()).forEach { target ->
         target.binaries.framework {
             baseName = "KmpLabNetwork"
             isStatic = true

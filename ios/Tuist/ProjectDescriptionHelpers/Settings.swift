@@ -15,6 +15,14 @@ public enum KmpLab {
         // Adding Sendable later is additive; adding isolation later breaks
         // every consumer.
         "SWIFT_VERSION": "6.0",
+
+        // :shared:network builds no iosX64 slice, so there is no x86_64 Swift
+        // overlay for KmpLabNetwork. Without this, a build for the generic
+        // simulator destination still tries x86_64, silently falls back to the
+        // Objective-C clang module — which is architecture-independent — and
+        // every SKIE addition disappears with errors like "cannot find 'onEnum'
+        // in scope". Excluding the architecture makes the two sides agree.
+        "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "x86_64",
     ]
 
     // Deliberately not here: SWIFT_TREAT_WARNINGS_AS_ERRORS. SKIE emits a
