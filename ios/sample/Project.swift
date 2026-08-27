@@ -1,44 +1,28 @@
 import ProjectDescription
+import ProjectDescriptionHelpers
 
 // The sample app integrates KmpLabSDK exactly as a third party would.
+//
+// Nothing here mentions Gradle: the SDK project's KmpLabNetwork foreign build
+// target carries that, and the dependency graph pulls it in.
 let project = Project(
     name: "KmpLabSample",
+    settings: .settings(base: KmpLab.baseSettings),
     targets: [
         .target(
             name: "KmpLabSample",
             destinations: .iOS,
             product: .app,
             bundleId: "dev.akordev.kmplab.sample",
-            deploymentTargets: .iOS("15.0"),
+            deploymentTargets: KmpLab.deploymentTargets,
             infoPlist: .extendingDefault(with: [
                 "CFBundleDisplayName": "KmpLab Sample",
                 "UILaunchScreen": [:],
             ]),
-            sources: ["Sources/**"],
-            scripts: [
-                // Cmd+R rebuilds the Kotlin as well, so the app can never run
-                // against a stale framework. Gradle is incremental, so this is
-                // close to free once warm.
-                .pre(
-                    script: #"""
-                    set -euo pipefail
-                    ROOT="$SRCROOT/../.."
-                    "$ROOT/gradlew" -p "$ROOT"                         :shared:network:assembleKmpLabNetworkDebugXCFramework
-                    """#,
-                    name: "Rebuild KmpLabNetwork.xcframework",
-                    basedOnDependencyAnalysis: false
-                ),
-            ],
+            buildableFolders: ["Sources"],
             dependencies: [
                 .project(target: "KmpLabSDK", path: "../sdk"),
-            ],
-            settings: .settings(
-                base: [
-                    // Gradle writes outside the build directory, which Xcode's
-                    // script sandbox forbids.
-                    "ENABLE_USER_SCRIPT_SANDBOXING": "NO",
-                ]
-            )
+            ]
         ),
     ]
 )
