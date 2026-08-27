@@ -15,7 +15,7 @@ yet.
 
 ```
 shared/network/     Kotlin Multiplatform — the only shared code.
-                    Targets: androidTarget, iosArm64, iosSimulatorArm64, iosX64.
+                    Targets: androidTarget, iosArm64, iosSimulatorArm64.
                     Produces KmpLabNetwork.xcframework for the iOS side.
 
 android/sdk/        Android library. The public Kotlin SDK surface.
@@ -42,11 +42,47 @@ Kotlin support built in, so there is no `kotlin-android` plugin anywhere;
 
 ## Building
 
+Check the machine first. `doctor` reports the JDK, Android SDK, Xcode, Tuist and
+simulators, and prints the command that fixes anything it finds. It is plain
+shell with no dependencies, because it has to run on a machine whose toolchain is
+the problem.
+
 ```bash
-./gradlew :android:sample:assembleDebug     # Android
-cd ios && tuist generate                    # iOS — macOS only
+./scripts/doctor.sh     # 0 ready, 1 broken, 2 warnings only
 ```
 
+Then build whichever artifact you want, on either platform, in either
+configuration:
+
+```bash
+./gradlew buildAndroidSampleDebug     # APK
+./gradlew buildAndroidSdkRelease      # AAR
+./gradlew buildIosSampleDebug         # app        — macOS only
+./gradlew buildIosSdkRelease          # framework  — macOS only
+```
+
+`./gradlew tasks --group=KmpLab` lists all eight, plus `generateXcodeWorkspace`.
+
+Nothing needs a separate setup step. The iOS tasks build the Kotlin XCFramework
+and generate the Xcode workspace on the way, and regenerate only when a Tuist
+manifest actually changed. The workspace is generated rather than committed: a
+`.pbxproj` is machine-written, merge-hostile and not reviewable.
+
+iOS builds target the simulator, which is what a developer runs. For a device or
+a named simulator:
+
+```bash
+./gradlew buildIosSdkDebug -Pkmplab.destination='generic/platform=iOS'
+```
+
+Simulator builds are signed ad-hoc, so a missing signing identity never blocks
+one. Building the *app* for a device is different — it needs a development team
+configured in `ios/sample/Project.swift`, and fails without one.
+
+To work in Xcode instead, open `ios/KmpLab.xcworkspace` after any iOS task has
+generated it.
+
 Kotlin/Native compiles the Apple targets to `.klib` on Linux, but **linking a
-framework needs macOS** — Gradle skips those tasks here rather than failing. See
+framework needs macOS** — the iOS tasks fail with a clear message there rather
+than obscurely. The Android tasks build everywhere. See
 [ios/README.md](ios/README.md).
